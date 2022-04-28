@@ -21,7 +21,17 @@ The JSON Object may look something like this:
 }
 ```
 
+## Application Architecture 
+<img src="https://github.com/HasmH/scumBuster/blob/main/APIarch.png?raw=true" width="750" heigh="750">
+
+
 ## How is Data Gathered
 
 As previously mentioned, data can be gathered via the Steam API and other game community DB's. Additionally, members of the gaming community will be able to send in their own report to cheaters and toxic players. Since 'trust_factor' is relative to the rest of the community - false reports should not have an impact on genuine players. 
 
+## Running the Project (in it's current state)
+Run this command from the root of the repository, once cloned.
+
+```
+pip install -r requirements.txt
+```
