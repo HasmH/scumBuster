@@ -22,7 +22,7 @@ The JSON Object may look something like this:
 ```
 
 ## Application Architecture 
-![alt text](https://github.com/HasmH/scumBuster/blob/main/APIarch.png?raw=true =400x400)
+<img src="https://github.com/HasmH/scumBuster/blob/main/APIarch.png?raw=true" width="300" heigh="300">
 
 
 ## How is Data Gathered
