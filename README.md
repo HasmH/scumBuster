@@ -1,4 +1,4 @@
-# scumBuster --Mohamad Was here
+# scumBuster
 Game community "Anti-Cheat" API created with Django, ReactJS, and PostgreSQL
 
 ## General Info
