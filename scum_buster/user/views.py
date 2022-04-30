@@ -10,4 +10,4 @@ def player(request, user_id):
     #query steam api with user vi
     #clean out useless info we dont want with steam api json
     #return our version of it 
-    return HttpResponse("Hey Scumbag")
+    return HttpResponse(user_id)
