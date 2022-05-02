@@ -4,17 +4,16 @@ import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from time import sleep
-from user.models import TrustFactor
+from user.models import scumBag
 import secrets.config as config
 
-def player(request, user_id):
-    
-    #User makes request that looks like www.scumbuster.com/searchuser?user=<whatever_the_cunts_name_is>
-    #get user var
-    #query steam api with user vi
-    #clean out useless info we dont want with steam api json
-    #return our version of it 
-    return HttpResponse(user_id)
+def userSearch(request, steamId):
+    if steamId is None:
+        return render(request, 'user.html')
+    #URL should look like this:
+    #/user?steamId=randomPlayerName
+    #results = getScumbagProfileViaWeb(steamId)
+    return render(request, 'user.html', {"output": steamId})
 
 
 #Helper Functions 

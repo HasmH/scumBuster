@@ -1,6 +1,8 @@
 from django.db import models
 
-class TrustFactor(models.Model):
-    player_id = models.CharField(max_length=50)
-    number_of_reports = models.CharField(max_length=50)
-    trust_factor = models.BooleanField()
+class scumBag(models.Model):
+    steamId = models.CharField(max_length=50)
+    numberOfReports = models.CharField(max_length=50)
+    trustFactor = models.BooleanField()
+
+

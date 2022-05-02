@@ -1,6 +1,7 @@
 {% block content %}
 
-<h1>Make a Report:</h1>
-<form action="{% url 'search_user' %}" method="POST"></form>
 
+<form action="{% url 'userSearch'}" method="get">
+    <input id="steamId" type="text" name="steamId">
+</form>
 {% endblock %}
