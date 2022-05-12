@@ -3,6 +3,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.userSearch, name='index'),
-    path('userSearch/<str:steamId>', views.userSearch, name='steamId-search')
+    path('scum', views.home, name='scum'),
+    path('search_scum', views.scum_search, name='scum_search')
 ]

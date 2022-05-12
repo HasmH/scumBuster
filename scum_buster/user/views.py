@@ -7,7 +7,11 @@ from time import sleep
 from user.models import scumBag
 import secrets.config as config
 
-def userSearch(request, steamId):
+def home(request):
+    return render(request, 'user.html')
+
+def scum_search(request):
+    steamId = request.GET['steamId']
     if steamId is None:
         return render(request, 'user.html')
     #URL should look like this:
