@@ -11,16 +11,16 @@ def home(request):
     return render(request, 'user.html')
 
 def scum_search(request):
-    steamId = request.GET['steamId']
-    if steamId is None:
-        return render(request, 'user.html')
-    #URL should look like this:
-    #/user?steamId=randomPlayerName
-    #results = getScumbagProfileViaWeb(steamId)
-    return render(request, 'user.html', {"output": steamId})
+    if request.method == 'GET':
+        steamId = str(request.GET.get('steamId'))
+        result = getScumbagProfileViaWeb(steamId)
+        return render(request, 'result.html', {'result':result})
 
 
 #Helper Functions 
+
+#User Input --> Display Name
+#Query Either Function
 
 #Web Scrape Steam Search Functionality - since we cannot query API via displayName
 def getScumbagProfileViaWeb(searchInput):

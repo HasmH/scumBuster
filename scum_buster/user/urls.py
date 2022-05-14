@@ -4,5 +4,5 @@ from . import views
 
 urlpatterns = [
     path('scum', views.home, name='scum'),
-    path('search_scum', views.scum_search, name='scum_search')
+    path('scum_search', views.scum_search, name='scum_search')
 ]
