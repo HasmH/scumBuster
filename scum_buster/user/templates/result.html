@@ -3,7 +3,15 @@
 
 <h1>test</h1>
 
-{{ result }}
-
+{% for i in result %}
+<tr>s
+    <td>
+        <!--this href will instead make a get request to profile.html endpoint and pass through the steam id in the iterable-->
+        <a href={{ i.profileLink }}>
+            {{ i.displayName }}
+        </a>
+    </td>
+</tr>
+{% endfor %}
 
 {% endblock %}

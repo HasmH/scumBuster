@@ -7,16 +7,25 @@ from time import sleep
 from user.models import scumBag
 import secrets.config as config
 
+#Root Page for Scum Search Functionality 
+#It's only responsiblity is to view a search bar to the end user
 def home(request):
     return render(request, 'user.html')
 
+#Search Results Page for Scum Search Functionality 
+#It should take in a user's display name OR steamId (custom or default), and return the corresponding steam profile
+#OR, it should return a list of display names and avatars (almost identical to the steam profile search website) and allow the user to pin point who..
+#the scum is
 def scum_search(request):
     if request.method == 'GET':
         steamId = str(request.GET.get('steamId'))
         result = getScumbagProfileViaWeb(steamId)
         return render(request, 'result.html', {'result':result})
+        #result.html should refer to scum_profile function for confirmation of user profile 
 
-
+#Confirms End Users search result, and redirects to a profile page where they can downvote to impact trustworthy factor 
+def scum_profile(request):
+    return 0
 #Helper Functions 
 
 #User Input --> Display Name
