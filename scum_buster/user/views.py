@@ -18,14 +18,21 @@ def home(request):
 #the scum is
 def scum_search(request):
     if request.method == 'GET':
-        steamId = str(request.GET.get('steamId'))
-        result = getScumbagProfileViaWeb(steamId)
+        search_value = str(request.GET.get('search_value'))
+        result = getScumbagProfileViaWeb(search_value) 
+        print(result)
         return render(request, 'result.html', {'result':result})
-        #result.html should refer to scum_profile function for confirmation of user profile 
 
 #Confirms End Users search result, and redirects to a profile page where they can downvote to impact trustworthy factor 
-def scum_profile(request):
-    return 0
+def scum_profile(request, steamId):
+    #Depending on which profile the End User clicks on, pass their STEAM ID through SCUM_PROFILE
+    #Pseudocode:
+        #First get "steamId" (custom or default) from scum_search
+        #Pass it through
+    if request.method == 'GET':
+        steamId = request.GET.get('steamId')
+        scum = getScumbagProfileViaAPI(steamId)
+        return render(request, 'profile.html', {'scum': scum })
 #Helper Functions 
 
 #User Input --> Display Name
@@ -49,7 +56,8 @@ def getScumbagProfileViaWeb(searchInput):
         data = info.find("div", class_="searchPersonaInfo").find("a", class_="searchPersonaName")
         profileLink = data.get("href")
         displayName = data.text
-        finalInfo = {"displayName":displayName, "profileLink":profileLink}
+        steamId =  str(profileLink).lstrip('https://steamcommunity.com/profiles/')
+        finalInfo = {"displayName":displayName, "profileLink":profileLink, "steamId":steamId}
         result.append(finalInfo)
     #print(result)
     return result
@@ -57,8 +65,7 @@ def getScumbagProfileViaWeb(searchInput):
 #Query API via steamid 
 def getScumbagProfileViaAPI(searchInput):
     #API Docs: https://developer.valvesoftware.com/wiki/Steam_Web_API#GetPlayerSummaries_.28v0001.29
-    profileLink = getScumbagProfileViaWeb(searchInput)[0]["profileLink"]
-    steamId = str(profileLink)[30:]
+    steamId = searchInput
     
     #if custom steam id (i.e. not a 64bit number) --> use ResolveVanityURL
     if steamId.isdigit() == False:
