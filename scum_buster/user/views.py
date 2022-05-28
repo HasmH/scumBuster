@@ -30,13 +30,27 @@ def scum_profile(request, steamId):
         #First get "steamId" (custom or default) from scum_search
         #Pass it through
     if request.method == 'GET':
-        steamId = request.GET.get('steamId')
+        print(steamId)
         scum = getScumbagProfileViaAPI(steamId)
         return render(request, 'profile.html', {'scum': scum })
-#Helper Functions 
 
-#User Input --> Display Name
-#Query Either Function
+#Downvotes a user and saves their information in a database
+def scum_downvote(request, steamId):
+
+    #Once downvote button is pressed
+        #Save User Model in DB 
+        #-1 to their trustfactor 
+
+    #First need to check: does the user already exist in the database? --> If so, display current information 
+        #Display Downvote Button
+        #Display Trust Factor/Number of Reports 
+
+    #else If user does not exist in database.. --> Once player clicks on downvote, save their information (model) to db     
+
+    return 0
+
+
+#Helper Functions 
 
 #Web Scrape Steam Search Functionality - since we cannot query API via displayName
 def getScumbagProfileViaWeb(searchInput):
@@ -46,7 +60,7 @@ def getScumbagProfileViaWeb(searchInput):
     driver = webdriver.Chrome(config.webdriver_path)
     driver.get(URL)
     page = requests.get(url=URL)
-
+    #TODO: Add pagination 
     #Allow page to fully render
     sleep(5)
     soup = BeautifulSoup(driver.page_source, "html.parser")
@@ -56,24 +70,29 @@ def getScumbagProfileViaWeb(searchInput):
         data = info.find("div", class_="searchPersonaInfo").find("a", class_="searchPersonaName")
         profileLink = data.get("href")
         displayName = data.text
-        steamId =  str(profileLink).lstrip('https://steamcommunity.com/profiles/')
+        #URL Looks different depending on whether they have custom steamId or default steamId
+        if 'profiles' in profileLink:
+            steamId =  str(profileLink).removeprefix('https://steamcommunity.com/profiles/')
+        else: 
+            steamId = str(profileLink).removeprefix('https://steamcommunity.com/id/')
         finalInfo = {"displayName":displayName, "profileLink":profileLink, "steamId":steamId}
         result.append(finalInfo)
-    #print(result)
     return result
 
 #Query API via steamid 
 def getScumbagProfileViaAPI(searchInput):
     #API Docs: https://developer.valvesoftware.com/wiki/Steam_Web_API#GetPlayerSummaries_.28v0001.29
-    steamId = searchInput
-    
+    steamId = str(searchInput)
+    #Depending on which API is used - need to sanitize input differently and appropriately to get relevant information, in this case.. steamid
     #if custom steam id (i.e. not a 64bit number) --> use ResolveVanityURL
     if steamId.isdigit() == False:
         API_QUERY = "http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=" + config.api_key + "&vanityurl=" + steamId
-    #if steam id is normal (i.e. 64bit number) --> use GetPlayerSummaries api
+        r = requests.get(API_QUERY)
+        result = r.json()['response']
+    #if steam id is normal (i.e. 64bit number) --> use GetPlayerSummaries ap
     if steamId.isdigit() == True and int(steamId).bit_length() <= 63:
         API_QUERY = "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=" + config.api_key + "&steamids=" + steamId
-    r = requests.get(API_QUERY)
-    #print(r.json())
-    return r.json()
-    
+        r = requests.get(API_QUERY)
+        result = r.json()['response']['players'][0]
+    return result
+        

@@ -1,19 +1,17 @@
 {% block content %}
 
 
-<h1>test</h1>
-
-{% for i in result %}
-<tr>
-    <td>
-        <!--this href will instead make a get request to profile.html endpoint and pass through the steam id in the iterable-->
-        <!-- pass i.steamId into scum_profile url-->
-        
-        
-            {{ i.displayName }}
-
-    </td>
-</tr>
-{% endfor %}
+<h1>Who's the scum bag?</h1>
+<table> 
+    {% for i in result %}
+    <tr>
+        <td>
+            <a href="{% url 'scum_profile' i.steamId %}">
+                {{i.displayName}}
+            </a> 
+        </td>
+    </tr>
+    {% endfor %}
+</table>
 
 {% endblock %}

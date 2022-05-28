@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from time import sleep
-import secrets.config as config
+import scum_buster.secrets.config as config
 
 #Web Scrape Steam Search Functionality - since we cannot query API via displayName
 def getScumbagProfileViaWeb(searchInput):
@@ -44,5 +44,5 @@ def getScumbagProfileViaAPI(searchInput):
     return r.json()
 
 if __name__ == "__main__":
-    getScumbagProfileViaWeb("hasm")
+    #getScumbagProfileViaWeb("hasm")
     getScumbagProfileViaAPI("hasm")
