@@ -1,8 +1,13 @@
+from django.http import HttpResponse
+from django.shortcuts import render
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from time import sleep
-import scum_buster.keys_and_config.config as config
+from user.models import scumBag
+import keys_and_config.config as config
+
+#Helper Functions 
 
 #Web Scrape Steam Search Functionality - since we cannot query API via displayName
 def getScumbagProfileViaWeb(searchInput):
@@ -12,7 +17,7 @@ def getScumbagProfileViaWeb(searchInput):
     driver = webdriver.Chrome(config.webdriver_path)
     driver.get(URL)
     page = requests.get(url=URL)
-
+    #TODO: Add pagination 
     #Allow page to fully render
     sleep(5)
     soup = BeautifulSoup(driver.page_source, "html.parser")
@@ -22,27 +27,28 @@ def getScumbagProfileViaWeb(searchInput):
         data = info.find("div", class_="searchPersonaInfo").find("a", class_="searchPersonaName")
         profileLink = data.get("href")
         displayName = data.text
-        finalInfo = {"displayName":displayName, "profileLink":profileLink}
+        #URL Looks different depending on whether they have custom steamId or default steamId
+        if 'profiles' in profileLink:
+            steamId =  str(profileLink).removeprefix('https://steamcommunity.com/profiles/')
+        else: 
+            steamId = str(profileLink).removeprefix('https://steamcommunity.com/id/')
+        finalInfo = {"displayName":displayName, "profileLink":profileLink, "steamId":steamId}
         result.append(finalInfo)
-    print(result)
     return result
 
 #Query API via steamid 
 def getScumbagProfileViaAPI(searchInput):
     #API Docs: https://developer.valvesoftware.com/wiki/Steam_Web_API#GetPlayerSummaries_.28v0001.29
-    profileLink = getScumbagProfileViaWeb(searchInput)[0]["profileLink"]
-    steamId = str(profileLink)[30:]
-    
+    steamId = str(searchInput)
+    #Depending on which API is used - need to sanitize input differently and appropriately to get relevant information, in this case.. steamid
     #if custom steam id (i.e. not a 64bit number) --> use ResolveVanityURL
     if steamId.isdigit() == False:
         API_QUERY = "http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=" + config.api_key + "&vanityurl=" + steamId
-    #if steam id is normal (i.e. 64bit number) --> use GetPlayerSummaries api
+        r = requests.get(API_QUERY)
+        result = r.json()['response']
+    #if steam id is normal (i.e. 64bit number) --> use GetPlayerSummaries ap
     if steamId.isdigit() == True and int(steamId).bit_length() <= 63:
         API_QUERY = "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=" + config.api_key + "&steamids=" + steamId
-    r = requests.get(API_QUERY)
-    print(r.json())
-    return r.json()
-
-if __name__ == "__main__":
-    #getScumbagProfileViaWeb("hasm")
-    getScumbagProfileViaAPI("hasm")
+        r = requests.get(API_QUERY)
+        result = r.json()['response']['players'][0]
+    return result

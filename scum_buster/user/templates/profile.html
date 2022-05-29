@@ -1,8 +1,10 @@
 {% block content %}
 
-
-<h1>{{ scum.steamid }}</h1>
-
-
-
+<h2>{{ scum.steamid }}</h2>
+{% for steamid, success in scum.items %} 
+<form action="{% url 'scum_downvote' steamid %}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="Downvote this motherf***er!!!!!!">
+</form>
+{% endfor %}
 {% endblock %}
