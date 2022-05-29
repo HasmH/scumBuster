@@ -37,10 +37,12 @@ def scum_profile(request, steamId):
 #Downvotes a user and saves their information in a database
 def scum_downvote(request, steamId):
 
+    if request.method == 'POST' and str(request.GET.get('d') is 'true'):
+        scumBag.objects.create()
     #Once downvote button is pressed
         #Save User Model in DB 
         #-1 to their trustfactor 
-
+    
     #First need to check: does the user already exist in the database? --> If so, display current information 
         #Display Downvote Button
         #Display Trust Factor/Number of Reports 
