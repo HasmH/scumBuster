@@ -1,10 +1,11 @@
 {% block content %}
 
-<h2>{{ scum.steamid }}</h2>
-{% for steamid, success in scum.items %} 
-<form action="{% url 'scum_downvote' steamid %}" method="post">
+<h2>{{ scum.personaname }}</h2>
+<a href={{scum.profileurl}} target="_blank"> Their steam profile </a>
+{{scum.steamid}}
+<form action="{% url 'scum_downvote' scum.steamid %}" method="post">
     {% csrf_token %}
     <input type="submit" value="Downvote this motherf***er!!!!!!">
 </form>
-{% endfor %}
+
 {% endblock %}

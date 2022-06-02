@@ -26,8 +26,14 @@ def scum_search(request):
 def scum_profile(request, steamId):
     if request.method == 'GET':
         scum = getScumbagProfileViaAPI(steamId)
-        print(scum)
-        return render(request, 'profile.html', {'scum': scum })
+        #Here we decide - what information we want from API: 
+        result = {
+            'steamid': scum['steamid'],
+            'personaname': scum['personaname'],
+            'profileurl': scum['profileurl'],
+            'avatar': scum['avatar']
+        }
+        return render(request, 'profile.html', {'scum': result })
 
 #Downvotes a user and saves their information in a database
 def scum_downvote(request, steamId):
