@@ -5,8 +5,10 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from time import sleep
 from user.models import scumBag
+from user.models import report
 import keys_and_config.config as config
 from . import api
+import datetime
 
 #Root Page for Scum Search Functionality 
 #It's only responsiblity is to view a search bar to the end user
@@ -14,7 +16,6 @@ def home(request):
     return render(request, 'user.html')
 
 #Search Results Page for Scum Search Functionality 
-#Takes in Display Name
 #TODO: Implement taking in steam Id
 def search(request):
     if request.method == 'GET':
@@ -33,16 +34,39 @@ def profile(request, steamId):
             'profileurl': scum['profileurl'],
             'avatar': scum['avatar']
         }
-        return render(request, 'profile.html', {'scum': result })
+        scum_bag = scumBag.objects.filter(steam_id=scum['steamid']).first()
+        if scum_bag is None:
+            return render(request, 'profile.html', {'scum': result})
+        elif scum_bag is not None: 
+            report_history = report.objects.filter(scum_bag=scum_bag)
+            if report_history is None: 
+                return render(request, 'profile.html', {'scum': result})
+            else: 
+                return render(request, 'profile.html', {'scum': result, 'reports': report_history})
 
 #Downvotes a user and saves their information in a database
 def downvote(request, steamId):
-    print(steamId)
     if request.method == 'POST':
-        new_scum = scumBag.objects.create(steam_id=steamId, number_of_reports=1)
-        return render(request, 'test.html', {'scum':new_scum })
-    else: 
-        return render(request, 'test.html')    
+        report_game = game_enum(str(request.POST.get('game')))
+        time_of_report = datetime.datetime.now()
+        if scumBag.objects.filter(steam_id=steamId).first():
+            scum_bag = scumBag.objects.filter(steam_id=steamId).first()
+            new_report = report.objects.create(scum_bag=scum_bag, time_of_report=time_of_report, report_game=report_game)
+        else: 
+            scum_bag = scumBag.objects.create(steam_id=steamId)
+            new_report = report.objects.create(scum_bag=scum_bag, time_of_report=time_of_report, report_game=report_game)
+        report_history = report.objects.filter(scum_bag=scum_bag)
+        #TODO: Refactor this - its just a workaround:
+        scum = getScumbagProfileViaAPI(steamId)
+        result = {
+            'steamid': scum['steamid'],
+            'personaname': scum['personaname'],
+            'profileurl': scum['profileurl'],
+            'avatar': scum['avatar']
+        }
+        return render(request, 'profile.html', {'scum':result, 'reports':report_history})   
+
+
 
 # -- HELPER FUNCTIONS --# 
 # -- (refer to api.py)--# 
@@ -53,7 +77,17 @@ def getScumbagProfileViaWeb(searchInput):
 def getScumbagProfileViaAPI(searchInput):
     return api.getScumbagProfileViaAPI(searchInput)
 
-
+def game_enum(value): 
+    if value == 'CSGO':
+        return report.game.CSGO
+    if value == 'TF2':
+        return report.game.TF2
+    if value == 'CSS':
+        return report.game.CSS
+    if value == 'GMOD':
+        return report.game.GMOD
+    if value == 'CS16':
+        return report.game.CS16
 #Current Thoughts:
     #Should I check that the logged in user, has the game that they are reporting for? 
         #Doesnt make sense, that if User A, is reporting User B for CS GO, but User A doesnt even fukn own CS GO????
