@@ -6,7 +6,7 @@
     {% for i in result %}
     <tr>
         <td>
-            <a href="{% url 'scum_profile' i.steamId %}">
+            <a href="{% url 'profile' i.steamId %}">
                 {{i.displayName}}
             </a> 
         </td>

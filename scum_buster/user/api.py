@@ -45,7 +45,10 @@ def getScumbagProfileViaAPI(searchInput):
     if steamId.isdigit() == False:
         API_QUERY = "http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=" + config.api_key + "&vanityurl=" + steamId
         r = requests.get(API_QUERY)
-        result = r.json()['response']
+        temp = r.json()['response']
+        #pass result['steamid'] --> other api 
+        r = requests.get("https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=" + config.api_key + "&steamids=" + temp['steamid'])
+        result = r.json()['response']['players'][0]
     #if steam id is normal (i.e. 64bit number) --> use GetPlayerSummaries ap
     if steamId.isdigit() == True and int(steamId).bit_length() <= 63:
         API_QUERY = "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=" + config.api_key + "&steamids=" + steamId

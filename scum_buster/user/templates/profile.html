@@ -3,7 +3,7 @@
 <h2>{{ scum.personaname }}</h2>
 <a href={{scum.profileurl}} target="_blank"> Their steam profile </a>
 {{scum.steamid}}
-<form action="{% url 'scum_downvote' scum.steamid %}" method="post">
+<form action="{% url 'downvote' scum.steamid %}" method="post">
     {% csrf_token %}
     <input type="submit" value="Downvote this motherf***er!!!!!!">
 </form>
