@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -51,21 +51,12 @@ def downvote(request, steamId):
         time_of_report = datetime.datetime.now()
         if scumBag.objects.filter(steam_id=steamId).first():
             scum_bag = scumBag.objects.filter(steam_id=steamId).first()
-            new_report = report.objects.create(scum_bag=scum_bag, time_of_report=time_of_report, report_game=report_game)
+            report.objects.create(scum_bag=scum_bag, time_of_report=time_of_report, report_game=report_game)
         else: 
             scum_bag = scumBag.objects.create(steam_id=steamId)
-            new_report = report.objects.create(scum_bag=scum_bag, time_of_report=time_of_report, report_game=report_game)
-        report_history = report.objects.filter(scum_bag=scum_bag)
-        #TODO: Refactor this - its just a workaround:
-        scum = getScumbagProfileViaAPI(steamId)
-        result = {
-            'steamid': scum['steamid'],
-            'personaname': scum['personaname'],
-            'profileurl': scum['profileurl'],
-            'avatar': scum['avatar']
-        }
-        return render(request, 'profile.html', {'scum':result, 'reports':report_history})   
-
+            report.objects.create(scum_bag=scum_bag, time_of_report=time_of_report, report_game=report_game)
+        return redirect('profile', steamId=steamId)
+        #TODO: Change the redirect to javascript dynamically rendering report history. 
 
 
 # -- HELPER FUNCTIONS --# 
