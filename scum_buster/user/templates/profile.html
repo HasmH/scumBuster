@@ -2,7 +2,7 @@
 
 <h2>{{ scum.personaname }}</h2>
 <a href={{scum.profileurl}} target="_blank"> Their steam profile </a>
-<form action="{% url 'downvote' scum.steamid %}" method="post">
+<form action="{% url 'downvote' scum.steamid %}" method="post" id="report_form">
     {% csrf_token %}
     <select id="game" name="game" required>
         <option value="CSGO">Counter Strike: Global Offensive</option>
@@ -10,8 +10,12 @@
         <option value="GMOD">Gary's Mod</option>
         <option value="CSS">Counter Strike: Source</option>
         <option value="CS16">Counter Strike 1.6</option>
-      </select>
-      <input type="submit" value="Downvote this motherf***er!!!!!!">
+    </select>
+    <select id="report_type" name="report_type" required>
+        <option value="CHEATER">Cheater</option>
+        <option value="TOXIC">Toxic</option>
+    </select>
+      <input type="submit" value="Downvote!">
 </form>
 
 <h3>Report History:</h3>
@@ -21,6 +25,7 @@
             <td>
                 {{i.report_game}}
                 {{i.time_of_report}}
+                {{i.report_type_enum}}
             </td>
         </tr>
 

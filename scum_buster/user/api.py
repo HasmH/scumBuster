@@ -16,7 +16,6 @@ def getScumbagProfileViaWeb(searchInput):
     #Please download appropirate version for your local machine: https://chromedriver.chromium.org/downloads
     driver = webdriver.Chrome(config.webdriver_path)
     driver.get(URL)
-    page = requests.get(url=URL)
     #TODO: Add pagination 
     #Allow page to fully render
     sleep(5)

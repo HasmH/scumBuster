@@ -20,8 +20,12 @@ def home(request):
 def search(request):
     if request.method == 'GET':
         search_value = str(request.GET.get('q'))
-        result = getScumbagProfileViaWeb(search_value) 
-        return render(request, 'result.html', {'result':result})
+        result = getScumbagProfileViaWeb(search_value) #deadly function - try to run as little as possible
+        for player in result:
+            extra_info = getScumbagProfileViaAPI(player['steamId']) 
+            player['avatar'] = extra_info['avatar']
+            player['number_of_reports'] = int(report.objects.filter(scum_bag=scumBag.objects.filter(steam_id=extra_info['steamid']).first()).count())
+        return render(request, 'result.html', {'result':result })
 
 #Confirms End Users search result, and redirects to a profile page where they can downvote to impact trustworthy factor 
 def profile(request, steamId):
@@ -45,18 +49,19 @@ def profile(request, steamId):
                 return render(request, 'profile.html', {'scum': result, 'reports': report_history})
 
 #Downvotes a user and saves their information in a database
+#Login Required here 
 def downvote(request, steamId):
     if request.method == 'POST':
         report_game = game_enum(str(request.POST.get('game')))
+        report_type = report_enum(str(request.POST.get('report_type')))
         time_of_report = datetime.datetime.now()
         if scumBag.objects.filter(steam_id=steamId).first():
             scum_bag = scumBag.objects.filter(steam_id=steamId).first()
-            report.objects.create(scum_bag=scum_bag, time_of_report=time_of_report, report_game=report_game)
+            report.objects.create(scum_bag=scum_bag, time_of_report=time_of_report, report_game=report_game, report_type_enum=report_type)
         else: 
             scum_bag = scumBag.objects.create(steam_id=steamId)
-            report.objects.create(scum_bag=scum_bag, time_of_report=time_of_report, report_game=report_game)
+            report.objects.create(scum_bag=scum_bag, time_of_report=time_of_report, report_game=report_game,  report_type_enum=report_type)
         return redirect('profile', steamId=steamId)
-        #TODO: Change the redirect to javascript dynamically rendering report history. 
 
 
 # -- HELPER FUNCTIONS --# 
@@ -68,6 +73,7 @@ def getScumbagProfileViaWeb(searchInput):
 def getScumbagProfileViaAPI(searchInput):
     return api.getScumbagProfileViaAPI(searchInput)
 
+#Grabs the enum value for the game scum is being reported on
 def game_enum(value): 
     if value == 'CSGO':
         return report.game.CSGO
@@ -79,6 +85,12 @@ def game_enum(value):
         return report.game.GMOD
     if value == 'CS16':
         return report.game.CS16
+
+def report_enum(value): 
+    if value == 'TOXIC':
+        return report.report_type.TOXIC
+    if value == 'CHEATER':
+        return report.report_type.CHEATER
 #Current Thoughts:
     #Should I check that the logged in user, has the game that they are reporting for? 
         #Doesnt make sense, that if User A, is reporting User B for CS GO, but User A doesnt even fukn own CS GO????

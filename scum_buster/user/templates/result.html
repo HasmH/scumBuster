@@ -6,9 +6,15 @@
     {% for i in result %}
     <tr>
         <td>
+            <img src="{{ i.avatar }}">
+        </td>
+        <td>
             <a href="{% url 'profile' i.steamId %}">
                 {{i.displayName}}
             </a> 
+        </td>
+        <td>
+            {{i.number_of_reports}}
         </td>
     </tr>
     {% endfor %}

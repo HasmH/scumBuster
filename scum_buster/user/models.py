@@ -1,3 +1,4 @@
+from secrets import choice
 from django.db import models
 
 class scumBag(models.Model):
@@ -19,7 +20,12 @@ class report(models.Model):
         GMOD = "Gary's Mod"
         CS16 = 'Counter Strike 1.6'
 
+    class report_type(models.TextChoices):
+        TOXIC = 'Toxic'
+        CHEATER = 'Cheater'
+
     report_game = models.CharField(max_length=50, choices=game.choices)
+    report_type_enum = models.CharField(max_length=50, choices=report_type.choices, default='empty')
 
 
 
