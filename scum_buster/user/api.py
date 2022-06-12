@@ -2,8 +2,6 @@ from django.http import HttpResponse
 from django.shortcuts import render
 import requests
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from time import sleep
 from user.models import scumBag
 import keys_and_config.config as config
 
@@ -11,18 +9,13 @@ import keys_and_config.config as config
 
 #Web Scrape Steam Search Functionality - since we cannot query API via displayName
 def getScumbagProfileViaWeb(searchInput):
-    URL = "https://steamcommunity.com/search/users/#text=" + str(searchInput)
-    #Testing Purposes Only: Looks like we'll need to install a webdriver on hostmachine if this goes live 
-    #Please download appropirate version for your local machine: https://chromedriver.chromium.org/downloads
-    driver = webdriver.Chrome(config.webdriver_path)
-    driver.get(URL)
-    #TODO: Add pagination 
-    #Allow page to fully render
-    sleep(5)
-    soup = BeautifulSoup(driver.page_source, "html.parser")
-    searchRow = soup.find_all("div", class_="search_row")
+    cookies = get_cookies()
+    URL = "https://steamcommunity.com/search/SearchCommunityAjax?text=hasm&filter=users&"+ "sessionid=" + cookies['sessionid'] + "&steamid_user=false" + "&page=" + "1" #str(page_number)
+    r = requests.get(URL, cookies=cookies)
+    soup = BeautifulSoup(r.json()['html'], "html.parser")
+    search_row = soup.find_all("div", class_="search_row")
     result = []
-    for info in searchRow:
+    for info in search_row:
         data = info.find("div", class_="searchPersonaInfo").find("a", class_="searchPersonaName")
         profileLink = data.get("href")
         displayName = data.text
@@ -35,6 +28,11 @@ def getScumbagProfileViaWeb(searchInput):
         result.append(finalInfo)
     return result
 
+def get_cookies():
+    URL = 'https://steamcommunity.com/search/users/'
+    r = requests.get(URL)
+    #print(r.cookies)
+    return r.cookies
 #Query API via steamid 
 def getScumbagProfileViaAPI(searchInput):
     #API Docs: https://developer.valvesoftware.com/wiki/Steam_Web_API#GetPlayerSummaries_.28v0001.29
