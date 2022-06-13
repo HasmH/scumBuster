@@ -10,8 +10,8 @@ import keys_and_config.config as config
 #Web Scrape Steam Search Functionality - since we cannot query API via displayName
 def getScumbagProfileViaWeb(searchInput):
     cookies = get_cookies()
-    URL = "https://steamcommunity.com/search/SearchCommunityAjax?text=hasm&filter=users&"+ "sessionid=" + cookies['sessionid'] + "&steamid_user=false" + "&page=" + "1" #str(page_number)
-    r = requests.get(URL, cookies=cookies)
+    URL = "https://steamcommunity.com/search/SearchCommunityAjax?text=" + str(searchInput) + "&filter=users&"+ "sessionid=" + cookies['sessionid'] + "&steamid_user=false" + "&page=" + "1" #str(page_number)
+    r = requests.get(URL, cookies=cookies) 
     soup = BeautifulSoup(r.json()['html'], "html.parser")
     search_row = soup.find_all("div", class_="search_row")
     result = []
@@ -28,11 +28,13 @@ def getScumbagProfileViaWeb(searchInput):
         result.append(finalInfo)
     return result
 
+#Get cookie from steamcommunity so I can query AJAX 
 def get_cookies():
     URL = 'https://steamcommunity.com/search/users/'
     r = requests.get(URL)
     #print(r.cookies)
     return r.cookies
+    
 #Query API via steamid 
 def getScumbagProfileViaAPI(searchInput):
     #API Docs: https://developer.valvesoftware.com/wiki/Steam_Web_API#GetPlayerSummaries_.28v0001.29

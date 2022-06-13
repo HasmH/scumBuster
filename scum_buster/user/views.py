@@ -50,6 +50,12 @@ def profile(request, steamId):
 
 #Downvotes a user and saves their information in a database
 #Login Required here 
+#Pseudo Code to clean up with javascript:
+    #User Clicks on Search Result --> will append either vanityurl or steam id
+    #Then user clicks on downvote --> will send either steam id OR the vanityurl's steam id --> leading to url looking botched??
+    #So, to fix this... 
+    #As Downvote is clicked, do not send either to append to url, url stays same, make ajax request and update the div with info 
+    
 def downvote(request, steamId):
     if request.method == 'POST':
         report_game = game_enum(str(request.POST.get('game')))
